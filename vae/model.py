@@ -54,19 +54,17 @@ class Decoder(nn.Module):
 
 class VAE(nn.Module):
 
-    def __init__(self, latent_dim, device=torch.device('mps' if torch.backends.mps.is_available() else 'cpu')):
+    def __init__(self, latent_dim):
         super().__init__()
         self.latent_dim = latent_dim
         # the encoder generates mean vector & standard deviation vector, each has the dimension of self.latent_dim
         self.encoder_dim = 2 * latent_dim
         self.encoder = Encoder(self.encoder_dim)
         self.decoder = Decoder(latent_dim)
-        self.device = device
-        self.to(device)
 
     def reparameterize(self, z_mean, z_logsigma):
         # By default, torch.randn is "standard" (ie. mean=0 and std=1.0)
-        epsilon = torch.randn(z_mean.shape, device=self.device)
+        epsilon = torch.randn(z_mean.shape).to(z_mean.device)
         z = z_mean + torch.exp(0.5 * z_logsigma) * epsilon
         return z
 

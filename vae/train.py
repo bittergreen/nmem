@@ -55,6 +55,8 @@ class VAETrainer:
         self.num_epochs = num_epochs
         self.celeba_loader = None
         self._load_datasets()
+        self.device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')  # train with M3 if available
+        self.vae.to(self.device)
 
     def _load_datasets(self):
         base_data_dir = "/Users/bittergreen/datasets/vision/"
@@ -64,13 +66,12 @@ class VAETrainer:
 
     def train(self):
         optimizer = torch.optim.Adam(self.vae.parameters(), lr=self.lr)
-        device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')  # train with M3 if available
         if hasattr(tqdm, '_instances'): tqdm._instances.clear()  # clear if it exists
         for epoch in range(self.num_epochs):
             i = 0
             for batch in tqdm(self.celeba_loader, desc=f"Epoch {epoch + 1}/{self.num_epochs}", unit="batch"):
                 optimizer.zero_grad()
-                batch = batch.to(device)
+                batch = batch.to(self.device)
                 x, recon, z_mean, z_logsigma = self.vae(batch)
                 loss = vae_loss_function(x, recon, z_mean, z_logsigma)
                 loss.backward()
@@ -86,8 +87,7 @@ class VAETrainer:
 
 if __name__ == '__main__':
     from model import VAE
-    dim = 128
-    vae = VAE(dim)
+    vae = VAE(latent_dim=12)
     trainer = VAETrainer(vae)
     trainer.train()
     trainer.save()

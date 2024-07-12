@@ -18,6 +18,6 @@ Learning from [Artem Kirsanov's video](https://www.youtube.com/watch?v=1WPJdAW-s
 
 ## 4.Modern Hopfield Nets(Also as a layer in pytorch)
 
-[paper][https://ml-jku.github.io/hopfield-layers/#selfatt]
+[paper](https://ml-jku.github.io/hopfield-layers/#selfatt)
 
 ## 5.Diffusion Models
